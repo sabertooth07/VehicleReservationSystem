@@ -12,6 +12,9 @@
     "express": "*",
     "jade": "*",
     "morgan": "*",
-    "serve-favicon": "*"
+    "serve-favicon": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "express-validator": "*"
   }
 }
