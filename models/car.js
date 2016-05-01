@@ -24,6 +24,12 @@ var CarSchema = mongoose.Schema({
 
 var Car = module.exports = mongoose.model('Car', CarSchema);
 
+module.exports.checkCar = function(car, callback) {
+    console.log(car);
+    var query = {"car_name": car};
+    Car.findOne(query, callback);
+}
+
 module.exports.createCar = function(newCar, callback) {
     console.log(newCar);
     newCar.save(callback);

@@ -78,14 +78,21 @@ router.post('/addCar', function(req, res, next){
             'is_available': true
         });
 
-         Car.createCar(newCar, function(err, car){
-            if (err) throw err;
-            console.log(car);
-         });
+        Car.checkCar(carName, function(err, document){
+            console.log(document);
+            if (document) {
+                console.log("Car name not available");
+                res.json(200, {"message": "Car name already taken, use a different name"});
+            } else {
 
-        console.log(carName);
-        console.log("hi");
-        res.json(200, {"message": "New vehile added"});
+                    Car.createCar(newCar, function(err, car){
+                    if (err) throw err;
+                    console.log(car);
+                    res.json(200, {"message": "New vehile added"});
+               });
+            }
+
+        });
     }
 });
 
@@ -94,10 +101,6 @@ router.post('/bookCar', function(req, res, next){
     req.checkBody('long', 'your longitude position is required').notEmpty().isInt().withMessage("Need an integer");
     req.checkBody('lat', 'your latitude is required').notEmpty().isInt().withMessage("Need an integer");
     req.checkBody('pink', 'Would you like a pink car?').notEmpty().isBoolean().withMessage("Need a boolean value");
-
-
-    console.log(req.param('long'));
-    console.log(req.param('lat'));
 
     var errors = req.validationErrors();
     if (errors) {
@@ -110,8 +113,6 @@ router.post('/bookCar', function(req, res, next){
         console.log("before query");
         if (!isPink) {
             Car.listAvailableCars(function(err, cars) {
-                console.log(cars);
-
                 var closestDist=undefined;
                 var closestCar=null;
                 for (i=0; i<cars.length; i++) {
@@ -129,27 +130,21 @@ router.post('/bookCar', function(req, res, next){
                 }
                 if (err) res.json(err);
                 if (closestCar) {
-                    res.json(200, {closestCar});
-                    console.log("Car booked:" + closestCar);
-                    console.log(closestCar._id);
-
                     Car.bookCar(closestCar._id, long, lat, function(err, raw){
-                        if(err) res.json(err);
+                        if(err) {res.json(err);}
                         else {
-                            console.log(raw);
+                            // console.log(raw);
+                            console.log("Car booked:" + closestCar);
                             res.json(200, {msg: "Your pink car is booked " + closestCar.car_name});
                         }
                     });
-                }
-                else {
+                } else {
                     res.json(200, {msg: "Sorry we're out of cars"});
                     console.log("No cars available");
                 }
             });
         } else {
             Car.listAvailablePinkCars(function(err, cars) {
-                console.log(cars);
-
                 var closestDist=undefined;
                 var closestCar=null;
                 for (i=0; i<cars.length; i++) {
@@ -167,18 +162,15 @@ router.post('/bookCar', function(req, res, next){
                 }
                 if (err) res.json(err);
                 if (closestCar) {
-                    res.json(200, {closestCar});
-                    console.log("Car booked:" + closestCar);
-                    console.log(closestCar._id);
                     Car.bookCar(closestCar._id, long, lat, function(err, raw){
-                        if(err) res.json(err);
+                        if(err) {res.json(err);}
                         else {
-                            console.log(raw);
+                            // console.log(raw);
+                            console.log("Car booked:" + closestCar);
                             res.json(200, {msg: "Your pink car is booked " + closestCar.car_name});
                         }
                     });
-                }
-                else {
+                } else {
                     res.json(200, {msg: "Sorry we're out of cars"});
                     console.log("No cars available");
                 }
@@ -188,6 +180,9 @@ router.post('/bookCar', function(req, res, next){
 });
 
 router.post('/fetchRideCost', function(req, res, next){
+    req.checkBody('time', 'Enter time in minutes').notEmpty().isInt().withMessage("Need an integer");
+    req.checkBody('dist', 'your latitude is required').notEmpty().isInt().withMessage("Need an integer");
+    req.checkBody('pink', 'Would you like a pink car?').notEmpty().isBoolean().withMessage("Need a boolean value");
 
 });
 
