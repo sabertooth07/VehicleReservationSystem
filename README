@@ -1,0 +1,19 @@
+1. Fetch all cars:
+    GET request
+    Returns: cars
+    Eg: http://localhost:3000/api/getAvailableCars?long=1&lat=1
+
+2.Fetch all available cars:
+    GET request
+    Returns: cars
+    Eg: http://localhost:3000/api/getAllCars
+
+3. Add car:
+    POST request
+    Attributes: Name, long, lat, pink/non-pink
+    Eg: curl -d '{"Name":"carOne", "long":1, "lat":1, "pink":true}' -H "Content-Type: application/json" http://localhost:3000/api/addCar
+
+4. Book car:
+    POST request
+    Attrs: long,lat
+    Eg: curl -d '{"long":1, "lat":95, "pink":false}' -H "Content-Type: application/json" http://localhost:3000/api/bookCar
