@@ -35,8 +35,17 @@ module.exports.listAllCars = function(callback) {
 }
 
 module.exports.listAvailableCars = function(callback) {
-    var query = {"is_available":true}
+    var query = {"is_available":true};
     Car.find(query, callback);
+}
+
+module.exports.listAvailablePinkCars = function(callback) {
+    var query = {"is_available":true, "is_pink":true};
+    Car.find(query, callback);
+}
+
+module.exports.bookCar = function(carId, long, lat, callback) {
+    Car.update({"_id": carId}, {$set: { "long": long, "lat": lat, "is_available": false } }, callback);
 }
 
 /*

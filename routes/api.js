@@ -90,7 +90,101 @@ router.post('/addCar', function(req, res, next){
 });
 
 router.post('/bookCar', function(req, res, next){
+    
+    req.checkBody('long', 'your longitude position is required').notEmpty().isInt().withMessage("Need an integer");
+    req.checkBody('lat', 'your latitude is required').notEmpty().isInt().withMessage("Need an integer");
+    req.checkBody('pink', 'Would you like a pink car?').notEmpty().isBoolean().withMessage("Need a boolean value");
 
+
+    console.log(req.param('long'));
+    console.log(req.param('lat'));
+
+    var errors = req.validationErrors();
+    if (errors) {
+        res.json(400, errors);
+    } else {
+        var long=req.body.long;
+        var lat=req.body.lat;
+        var isPink=req.body.pink;
+
+        console.log("before query");
+        if (!isPink) {
+            Car.listAvailableCars(function(err, cars) {
+                console.log(cars);
+
+                var closestDist=undefined;
+                var closestCar=null;
+                for (i=0; i<cars.length; i++) {
+                    var carLong=cars[i].long;
+                    var carLat=cars[i].lat;
+
+                    dist = Math.sqrt(Math.pow((carLong - long),2) + Math.pow((carLat - lat),2));
+                    if (closestDist == undefined) {
+                         closestDist = dist;
+                         closestCar = cars[i];
+                    } else if (dist < closestDist) {
+                         closestDist = dist;
+                         closestCar = cars[i];
+                    }
+                }
+                if (err) res.json(err);
+                if (closestCar) {
+                    res.json(200, {closestCar});
+                    console.log("Car booked:" + closestCar);
+                    console.log(closestCar._id);
+
+                    Car.bookCar(closestCar._id, long, lat, function(err, raw){
+                        if(err) res.json(err);
+                        else {
+                            console.log(raw);
+                            res.json(200, {msg: "Your pink car is booked " + closestCar.car_name});
+                        }
+                    });
+                }
+                else {
+                    res.json(200, {msg: "Sorry we're out of cars"});
+                    console.log("No cars available");
+                }
+            });
+        } else {
+            Car.listAvailablePinkCars(function(err, cars) {
+                console.log(cars);
+
+                var closestDist=undefined;
+                var closestCar=null;
+                for (i=0; i<cars.length; i++) {
+                    var carLong=cars[i].long;
+                    var carLat=cars[i].lat;
+
+                    dist = Math.sqrt(Math.pow((carLong - long),2) + Math.pow((carLat - lat),2));
+                    if (closestDist == undefined) {
+                         closestDist = dist;
+                         closestCar = cars[i];
+                    } else if (dist < closestDist) {
+                         closestDist = dist;
+                         closestCar = cars[i];
+                    }
+                }
+                if (err) res.json(err);
+                if (closestCar) {
+                    res.json(200, {closestCar});
+                    console.log("Car booked:" + closestCar);
+                    console.log(closestCar._id);
+                    Car.bookCar(closestCar._id, long, lat, function(err, raw){
+                        if(err) res.json(err);
+                        else {
+                            console.log(raw);
+                            res.json(200, {msg: "Your pink car is booked " + closestCar.car_name});
+                        }
+                    });
+                }
+                else {
+                    res.json(200, {msg: "Sorry we're out of cars"});
+                    console.log("No cars available");
+                }
+            });
+        }
+    }
 });
 
 router.post('/fetchRideCost', function(req, res, next){
