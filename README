@@ -1,7 +1,7 @@
 1. Fetch all cars:
     GET request
     Returns: cars
-    Eg: http://localhost:3000/api/getAvailableCars?long=1&lat=1
+    Eg: http://localhost:3000/api/getAvailableCars
 
 2.Fetch all available cars:
     GET request

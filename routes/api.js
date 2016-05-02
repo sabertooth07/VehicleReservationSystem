@@ -19,38 +19,11 @@ router.get('/getAllCars', function(req, res, next){
 });
 
 router.get('/getAvailableCars', function(req, res, next){
-
-    var schema = {
-        'long': {
-            in: 'query',
-            notEmpty: true,
-        },
-        'lat': {
-            in: 'query',
-            notEmpty: true,
-            errorMessage: 'A lat param is required'
-        }
-    };
-
-
-    console.log(req.param('long'));
-    console.log(req.param('lat'));
-    var errors = req.checkParams(schema);
-
-    //var errors = req.validationErrors();
-    if (errors) {
-        res.json(400, errors);
-    } else {
-        var long=req.body.long;
-        var lat=req.body.lat;
-
-        console.log("before query")
-        Car.listAvailableCars(function(err, cars) {
-            console.log(cars);
-            if (err) res.json(err);
-            res.json(200, {"Available cars": cars});
-        });      
-    }
+    Car.listAvailableCars(function(err, cars) {
+        console.log(cars);
+        if (err) res.json(400, err);
+        res.json(200, {"Available cars": cars});
+    });      
 });
 
 router.post('/addCar', function(req, res, next){
@@ -86,7 +59,7 @@ router.post('/addCar', function(req, res, next){
             } else {
 
                     Car.createCar(newCar, function(err, car){
-                    if (err) throw err;
+                    if (err) res.json(400, err);
                     console.log(car);
                     res.json(200, {"message": "New vehile added"});
                });
@@ -128,10 +101,10 @@ router.post('/bookCar', function(req, res, next){
                          closestCar = cars[i];
                     }
                 }
-                if (err) res.json(err);
+                if (err) res.json(400, err);
                 if (closestCar) {
                     Car.bookCar(closestCar._id, long, lat, function(err, raw){
-                        if(err) {res.json(err);}
+                        if (err) res.json(400, err);
                         else {
                             // console.log(raw);
                             console.log("Car booked:" + closestCar);
@@ -160,10 +133,10 @@ router.post('/bookCar', function(req, res, next){
                          closestCar = cars[i];
                     }
                 }
-                if (err) res.json(err);
+                if (err) res.json(400, err);
                 if (closestCar) {
                     Car.bookCar(closestCar._id, long, lat, function(err, raw){
-                        if(err) {res.json(err);}
+                        if (err) res.json(400, err);
                         else {
                             // console.log(raw);
                             console.log("Car booked:" + closestCar);
